@@ -1,0 +1,12 @@
+{
+    "name": "Phlego",
+    "authors": [{
+        "name": "Ilpaijin",
+        "email": "ilpaijin@gmail.com"
+    }],
+    "autoload": {
+        "psr-0": {
+            "Phlego": "src/"
+        }
+    }
+}
