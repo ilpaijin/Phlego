@@ -18,7 +18,7 @@ class Partial extends AbstractView
 
     public function addView(AbstractView $view)
     {
-        throw new PhlegoException("A partial cannot add another view");
+        parent::addView($view);
     }
 
     public function removeView(AbstractView $view)

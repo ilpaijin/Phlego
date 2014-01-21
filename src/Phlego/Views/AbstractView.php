@@ -17,7 +17,7 @@ abstract class AbstractView
 
     private $commands;
 
-    abstract public function addView(AbstractView $view);
+    public function addView(AbstractView $view){}
 
     abstract public function removeView(AbstractView $view);
 
@@ -41,7 +41,7 @@ abstract class AbstractView
     {
         $template = $this->path.DS.$template.".phlego.php";
 
-        if(!file_exists($template))
+        if(!is_file($template) || !is_readable($template))
         {
             throw new PhlegoException("The template file doesn't exists!");
         }
