@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row">
         
-        <h1>Phlego</h1>
+        <h1>{{= $title }}</h1>
 
         {{= $myVar }}     
  

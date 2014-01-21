@@ -17,6 +17,10 @@ abstract class AbstractView
 
     private $commands;
 
+    abstract public function addView(AbstractView $view);
+
+    abstract public function removeView(AbstractView $view);
+
     public function __construct($template = NULL,  array $data = array())
     {
         $this->setTemplate($template ?: $this->template);
@@ -25,7 +29,7 @@ abstract class AbstractView
         {
             foreach($data as $name => $value)
             {
-                $this->$name = $value;
+                $this->properties[$name] = $value;
             }
         }    
 
@@ -50,37 +54,8 @@ abstract class AbstractView
         return $this->template;
     }
 
-    public function __set($name, $value)
+    protected function parseTemplate($template)
     {
-        $this->properties[$name] = $value;
-    }
-
-    public function __get($name)
-    {
-        if(!isset($this->properties[$name]))
-        {
-            throw new PhlegoException("Property not valid!");
-        }
-
-        return $this->properties[$name];
-    }
-
-    public function __unset($name)
-    {
-        if(isset($this->properties[$name]))
-        {
-            unset($this->properties[$name]);
-        }
-    }
-
-    abstract public function addView(AbstractView $view);
-
-    abstract public function removeView(AbstractView $view);
-
-    private function parseTemplate($template)
-    {
-        // var_dump($template);
-
         $pattern = "/{{(.*?)\s(.*?)}}/";
 
         $repl = preg_replace_callback($pattern, array($this, 'parseCommands'), $template);
@@ -93,8 +68,6 @@ abstract class AbstractView
         
         array_shift($matches);
 
-        // var_dump($matches);
-
         $result = '';
         
         if(class_exists(__NAMESPACE__."\\".ucfirst($matches[0])))
@@ -105,7 +78,7 @@ abstract class AbstractView
 
         if(in_array($matches[0], array("=")))
         {
-            $result = "<?php echo ". $matches[1] . "; ?>";
+            $result = "<?php echo ". trim($matches[1]) . "; ?>";
             return $this->parseTemplate($result);
         }   
     }
@@ -113,13 +86,12 @@ abstract class AbstractView
     public function render()
     {
         if($this->template)
-        {
+        {            
             extract($this->properties);
-            ob_start();
             $tpl = file_get_contents($this->template);
-            var_dump($this->parseTemplate($tpl));
-            echo $this->parseTemplate($tpl);
-            return ob_get_clean();
+
+            return $this->parseTemplate($tpl);
+            
         }
     }
 }

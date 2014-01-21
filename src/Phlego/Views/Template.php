@@ -12,13 +12,9 @@ class Template extends AbstractView
 {
     protected $template = "default";
     protected $path = "views/templates";
+    public $cachedPath = 'views/cached/';
 
     private $views = array();
-
-    public static function factory($view, array $data = array())
-    {
-        return new self($view, $data);
-    }
 
     public function addView(AbstractView $view)
     {
@@ -50,7 +46,22 @@ class Template extends AbstractView
 
     public function render()
     {
-        $innerView = '';
+        $cachedFile = $this->cachedPath.substr($this->template, strrpos($this->template, '/'));
+
+        ob_start();
+
+        extract($this->properties);
+
+        // if(file_exists($cachedFile))
+        // {
+        //     include $cachedFile;
+
+        //     return ob_get_clean();
+        // }
+
+        $comm = $this->parseTemplate(file_get_contents($this->template));
+
+        $innerView = "";
 
         if(!empty($this->views))
         {   
@@ -58,12 +69,14 @@ class Template extends AbstractView
             {
                 $innerView .= $view->render();
             }
-
-            $this->properties = $innerView;
         }
 
-        $compositeView = parent::render();
+        
 
-        return !empty($compositeView) ? $compositeView : $innerView ;
+        file_put_contents($cachedFile, $innerView);
+
+        include $cachedFile;
+
+        return ob_get_clean();
     }
 }
