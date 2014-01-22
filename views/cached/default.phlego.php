@@ -10,7 +10,7 @@
 <body style="padding-top:20px;">
     <div class="container">
     <div class="header">
-        <img src="public/img/phlego.png" alt="" height="300" width="400">
+        <img src="public/img/phlego_200.png" alt="">
         
     </div>
     <div class="jumbotron">

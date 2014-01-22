@@ -1,7 +1,7 @@
 <div class="container">
     <div class="header">
-        <img src="public/img/phlego.png" alt="" height="300" width="400">
-        {{partial menu}}
+        <img src="public/img/phlego_200.png" alt="">
+        {{ menu}}
     </div>
     <div class="jumbotron">
         <h1>{{= $title }}</h1>

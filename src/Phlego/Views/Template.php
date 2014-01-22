@@ -10,12 +10,34 @@ namespace Phlego\Views;
 */
 class Template extends AbstractView
 {
+    /**
+     * [$template description]
+     * @var string
+     */
     protected $template = "default";
+    
+    /**
+     * [$path description]
+     * @var string
+     */
     protected $path = "views/templates";
+    
+    /**
+     * [$cachedPath description]
+     * @var string
+     */
     public $cachedPath = 'views/cached/';
 
+    /**
+     * [$views description]
+     * @var array
+     */
     private $views = array();
 
+    /**
+     * [addView description]
+     * @param AbstractView $view [description]
+     */
     public function addView(AbstractView $view)
     {
         if(!in_array($view, $this->views))
@@ -24,6 +46,11 @@ class Template extends AbstractView
         }
     }
 
+    /**
+     * [removeView description]
+     * @param  AbstractView $view [description]
+     * @return [type]             [description]
+     */
     public function removeView(AbstractView $view)
     {
         if(in_array($view, $this->views))
@@ -44,6 +71,10 @@ class Template extends AbstractView
         return $this;
     }
 
+    /**
+     * [render description]
+     * @return [type] [description]
+     */
     public function render()
     {
         $cachedFile = $this->cachedPath.substr($this->template, strrpos($this->template, '/'));

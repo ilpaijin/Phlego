@@ -13,14 +13,42 @@ use Phlego\Exceptions\PhlegoException;
 */
 abstract class AbstractView 
 {
+    /**
+     * [$properties description]
+     * @var array
+     */
     protected $properties = array();
 
+    /**
+     * [$commands description]
+     * @var [type]
+     */
     private $commands;
 
-    public function addView(AbstractView $view){}
+    /**
+     * [$prefix description]
+     * @var string
+     */
+    protected $prefix = ".phlego.php";
 
+    /**
+     * [addView description]
+     * @param AbstractView $view [description]
+     */
+    abstract public function addView(AbstractView $view);
+
+    /**
+     * [removeView description]
+     * @param  AbstractView $view [description]
+     * @return [type]             [description]
+     */
     abstract public function removeView(AbstractView $view);
 
+    /**
+     * [__construct description]
+     * @param [type] $template [description]
+     * @param array  $data     [description]
+     */
     public function __construct($template = NULL,  array $data = array())
     {
         $this->setTemplate($template ?: $this->template);
@@ -37,9 +65,13 @@ abstract class AbstractView
 
     }
 
+    /**
+     * [setTemplate description]
+     * @param [type] $template [description]
+     */
     public function setTemplate($template)
     {
-        $template = $this->path.DS.$template.".phlego.php";
+        $template = $this->path.DS.$template.$this->prefix;
 
         if(!is_file($template) || !is_readable($template))
         {
@@ -49,26 +81,48 @@ abstract class AbstractView
         $this->template = $template;
     }
 
+    /**
+     * [getTemplate description]
+     * @return [type] [description]
+     */
     public function getTemplate()
     {
         return $this->template;
     }
 
+    /**
+     * [parseTemplate description]
+     * @param  [type] $template [description]
+     * @return [type]           [description]
+     */
     protected function parseTemplate($template)
     {
         $pattern = "/{{(.*?)\s(.*?)}}/";
 
         $repl = preg_replace_callback($pattern, array($this, 'parseCommands'), $template);
 
-        return $repl;
+        return !empty($repl) ? $repl : false;
     }
 
+    /**
+     * [parseCommands description]
+     * @param  [type] $matches [description]
+     * @return [type]          [description]
+     */
     public function parseCommands($matches)
     {
         
         array_shift($matches);
 
         $result = '';
+
+        if($matches[0] == "partial")
+        {
+            $p = file_get_contents('views/partials/'.DS.$matches[1].$this->prefix);
+            var_dump($p);
+            var_dump($this->parseTemplate($p));
+        }
+        
         
         if(class_exists(__NAMESPACE__."\\".ucfirst($matches[0])))
         {
@@ -80,9 +134,13 @@ abstract class AbstractView
         {
             $result = "<?php echo ". trim($matches[1]) . "; ?>";
             return $this->parseTemplate($result);
-        }   
+        }          
     }
 
+    /**
+     * [render description]
+     * @return [type] [description]
+     */
     public function render()
     {
         if($this->template)
